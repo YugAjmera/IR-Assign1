@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>model.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>model.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>This functions reads the dataset of words and lyrics and indexes all the words by ids and collects songs from dataset and return them</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">dataset1</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)]</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">words</span><span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">17</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="c1">#distinct words in the dataset</span>
+    <span class="n">songs</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">18</span><span class="p">:]</span> <span class="c1">#describe each song</span>
+    <span class="n">word_by_id</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">id_by_word</span><span class="o">=</span><span class="p">{}</span>
+    <span class="nb">id</span><span class="o">=</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+        <span class="n">word_by_id</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
+        <span class="n">id_by_word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="nb">id</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">words</span><span class="p">,</span><span class="n">word_by_id</span><span class="p">,</span><span class="n">id_by_word</span><span class="p">,</span><span class="n">songs</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Iterate through all lyrics and Calculate tf-idf score of each word in every lyrics of given songs</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">tf_idf_calculation</span><span class="p">(</span><span class="n">songs</span><span class="p">):</span>
+    <span class="n">lyrics_by_songid_tf_score</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">songlength_by_songid</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">idf_by_wordid</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">word_id_doc_freq</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">songs</span><span class="p">:</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">le</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+            <span class="n">string</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">word_id_and_freq</span><span class="o">=</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="n">tf</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">word_id_and_freq</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">word_id_and_freq</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">le</span><span class="o">+=</span><span class="nb">int</span><span class="p">(</span><span class="n">word_id_and_freq</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">word_id_doc_freq</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">word_id_and_freq</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">word_id_doc_freq</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">word_id_and_freq</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">songlength_by_songid</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">le</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tf</span><span class="p">:</span>
+            <span class="n">tf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">tf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">le</span>
+        <span class="n">lyrics_by_songid_tf_score</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">tf</span>
+
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_id_doc_freq</span><span class="p">:</span>
+        <span class="n">idf_by_wordid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lyrics_by_songid_tf_score</span><span class="p">)</span><span class="o">/</span><span class="n">word_id_doc_freq</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">song_tf_idf_by_songid</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lyrics_by_songid_tf_score</span><span class="p">:</span>
+        <span class="n">toapp</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">dic</span><span class="o">=</span><span class="n">lyrics_by_songid_tf_score</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+            <span class="n">tf</span><span class="o">=</span><span class="n">dic</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">idf</span><span class="o">=</span><span class="n">idf_by_wordid</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">toapp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">tf</span><span class="o">*</span><span class="n">idf</span>
+        <span class="n">song_tf_idf_by_songid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">toapp</span>
+    <span class="k">return</span> <span class="n">song_tf_idf_by_songid</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Read dataset and gather Song details and index by Song id</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">get_song_details</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">=</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)]</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">song_details_by_songid</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">string</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">details</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">details</span><span class="p">[</span><span class="s1">&#39;Artist_name&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">string</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">details</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">song_details_by_songid</span><span class="p">[</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">details</span>
+    <span class="k">return</span> <span class="n">song_details_by_songid</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

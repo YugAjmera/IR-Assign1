@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>main.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>main.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model</span> <span class="kn">import</span> <span class="n">dataset1</span><span class="p">,</span><span class="n">tf_idf_calculation</span><span class="p">,</span><span class="n">get_song_details</span>
+<span class="kn">import</span> <span class="nn">tkinter</span> <span class="kn">as</span> <span class="nn">t</span>
+<span class="kn">from</span> <span class="nn">query_process</span> <span class="kn">import</span> <span class="n">process_query</span>
+<span class="kn">from</span> <span class="nn">cosine_simi</span> <span class="kn">import</span> <span class="n">CosineSimilarity</span>
+
+
+<span class="n">filename1</span><span class="o">=</span><span class="s2">&quot;mxm_dataset_train.txt&quot;</span>
+<span class="n">words</span><span class="p">,</span><span class="n">word_by_id</span><span class="p">,</span><span class="n">id_by_word</span><span class="p">,</span><span class="n">songs</span><span class="o">=</span><span class="n">dataset1</span><span class="p">(</span><span class="n">filename1</span><span class="p">)</span> <span class="c1">#Get words and index them in dictionary and make them accessible by both id and words</span>
+<span class="n">song_tf_idf_by_songid</span><span class="o">=</span><span class="n">tf_idf_calculation</span><span class="p">(</span><span class="n">songs</span><span class="p">)</span> <span class="c1"># Calculate tf-idf score of each word in each song document</span>
+
+<span class="n">filename2</span><span class="o">=</span><span class="s2">&quot;new_dataset.txt&quot;</span>
+<span class="n">song_details_by_songid</span><span class="o">=</span><span class="n">get_song_details</span><span class="p">(</span><span class="n">filename2</span><span class="p">)</span> <span class="c1">#Save the song details corresponding to SongID</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Fetch the query from tkinter Text field and get the processed query</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">fetch_query</span><span class="p">():</span>
+    <span class="n">query</span><span class="o">=</span><span class="n">gbn</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">END</span><span class="p">)</span>
+    <span class="n">processed_query</span><span class="o">=</span><span class="n">process_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">id_by_word</span><span class="p">,</span><span class="n">words</span><span class="p">)</span> <span class="c1">#process query by autocorrecting , stemming and replacing words by ids</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Final : &quot;</span><span class="p">,</span><span class="n">processed_query</span><span class="p">)</span> <span class="c1">#print processed query</span>
+    <span class="n">relevant_songs</span><span class="o">=</span><span class="n">CosineSimilarity</span><span class="p">(</span><span class="n">processed_query</span><span class="p">,</span><span class="n">word_by_id</span><span class="p">,</span><span class="n">id_by_word</span><span class="p">,</span><span class="n">song_tf_idf_by_songid</span><span class="p">)</span> <span class="c1"># Using CosineSimilarity get top 15 relevant songs</span>
+    <span class="n">write_in_text</span><span class="p">(</span><span class="n">relevant_songs</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Write the top 15 songs in the Text Area</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">write_in_text</span><span class="p">(</span><span class="n">relevant_songs</span><span class="p">):</span>
+    <span class="n">to_print</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">Top 15 Relevant Songs</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">j</span><span class="o">=</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">relevant_songs</span><span class="p">:</span>
+        <span class="n">to_print</span><span class="o">+=</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;. TITLE : &quot;</span>
+        <span class="n">to_print</span><span class="o">+=</span><span class="nb">str</span><span class="p">(</span><span class="n">song_details_by_songid</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;Title&#39;</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;Artist : &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">song_details_by_songid</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;Artist_name&#39;</span><span class="p">])</span>
+        <span class="n">to_print</span><span class="o">+=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="n">j</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="n">T</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">END</span><span class="p">,</span><span class="n">to_print</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Tkinter Window Setup</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">window</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">Tk</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Lyrics Search for Music Retrieval&quot;</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s1">&#39;900x900&#39;</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">background</span> <span class="o">=</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">gbn</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">window</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">gbn</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+<span class="n">bt1</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Search Songs&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="n">fetch_query</span><span class="p">)</span>
+<span class="n">bt1</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">Scrollbar</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">S</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">S</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">yview</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">yscrollcommand</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">END</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
