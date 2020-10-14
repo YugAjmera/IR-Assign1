@@ -1,1 +1,4 @@
-dataset.txt - Contains list of all track Echo Nest ID. The format is: track id<SEP>song id<SEP>artist name<SEP>song title
+Run:
+
+- Install pipenv using ``pip install -U pipenv``.
+- In the project folder, run ``pipenv install`` to install all python dependencies.
