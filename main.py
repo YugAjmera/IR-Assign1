@@ -10,7 +10,9 @@ song_details_by_songid = get_song_details(filename2) #Save the song details corr
 
 #Fetch the query from tkinter Text field and get the processed query
 def fetch_query():
-	a = 10
+	query=gbn.get()
+    	query=query.strip()
+    	T.delete(1.0,t.END)
 
 # Write the top 10 songs in the Text Area
 def write_in_text(relevant_songs):
