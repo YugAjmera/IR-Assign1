@@ -1,16 +1,16 @@
-from script import dataset,get_song_details, tf_idf_calc
+from script import dataset,get_song_details, tf_idf_calc, cosine_simi
 import Tkinter as t
 
 filename1 = "yug_test.txt" 
 #change this to original dataset: mxm_dataset_train.txt
 
-words_by_id, songs = dataset(filename1) 
+words_by_id, songs, id_by_word = dataset(filename1) 
 
 tf_idf_by_song_id = tf_idf_calc(songs) 
 
 
 filename2 = "yug_dataset.txt" 
-#change this to original dataset: new_dataset.txt
+#change this to original dataset: song_dataset.txt
 
 song_details_by_songid = get_song_details(filename2)
 
@@ -20,6 +20,14 @@ def fetch_query():
 	query = gbn.get()
     	query = query.strip()
     	T.delete(1.0, t.END)
+
+	#Prcoess Query here
+	query = {'i', 'love', 'coke'}	
+
+	relevant_songs = cosine_simi(query, words_by_id, id_by_word, tf_idf_by_song_id) # Use Cosine similatiry get top 10 songs
+
+    	write_in_text(relevant_songs)
+
 
 # Write the top 10 songs in the Text Area
 def write_in_text(relevant_songs):

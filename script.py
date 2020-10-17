@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 #This functions reads the dataset of words and lyrics and indexes all the words by ids and collects songs from dataset and return them
 def dataset(filename):
@@ -11,12 +12,14 @@ def dataset(filename):
     songs = lines[18:] 			#describe each song
 
     words_by_id = {}
+    id_by_word = {}
     id = 1
     for i in words:
         words_by_id[id] = i
+	id_by_word[i]=int(id)
         id += 1
 
-    return words_by_id, songs
+    return words_by_id, songs, id_by_word
 
 
 #Read dataset and gather Song details and index by Song id
@@ -75,7 +78,7 @@ def tf_idf_calc(songs):
 	N += total_words
 
     for i in df_wordid:
-	idf_by_wordid[i] = math.log(N/df_wordid[i])
+	idf_by_wordid[i] = 1 + math.log(N/df_wordid[i])
 
     tf_idf_by_songid={}
 
@@ -91,8 +94,54 @@ def tf_idf_calc(songs):
             tf_idf[j] = tf*idf
 
         tf_idf_by_songid[i] = tf_idf
-	print(tf_idf_by_songid)
-
+	
+    #print(tf_idf_by_songid)
     return tf_idf_by_songid
 
+
+
+#Calculate Cosine Score of every song with respect to query and return top 10 songs with their ids
+def cosine_simi(query, word_by_id, id_by_word, tf_idf_by_song_id):
+
+    qv = np.zeros(len(word_by_id)) #query vector
+    ids = {}
+    sim_by_songid = {}
+    
+    a = 1
+    for i in query:
+	ids[a] = id_by_word[i]
+	a += 1
+
+    for i in ids:
+	qv[ids[i]-1] = 1
+
+
+    for i in tf_idf_by_song_id:
+	song_id = i
+	
+	dv = np.zeros(len(word_by_id)) #document vector
+
+	for j in tf_idf_by_song_id[i]:
+		dv[j-1] = tf_idf_by_song_id[i][j]
+
+	sim_by_songid[song_id] = cosine(qv, dv)
+    
+    print("before")
+    print(sim_by_songid)
+    sorted_scores = sorted(sim_by_songid.items(), key=lambda yug: yug[1], reverse=True)
+    print("after")
+    print(sorted_scores)
+
+    relevant_songs=[]
+    for i in sorted_scores:
+        relevant_songs.append([i[0],i[1]])
+
+    return relevant_songs[0:10]
+
+
+def cosine(v1, v2):
+    v1 = np.array(v1)
+    v2 = np.array(v2)
+
+    return np.dot(v1, v2) / (np.sqrt(np.sum(v1**2)) * np.sqrt(np.sum(v2**2)))
 
