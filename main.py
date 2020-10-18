@@ -1,5 +1,9 @@
 from script import dataset,get_song_details, tf_idf_calc, cosine_simi
 import Tkinter as t
+from nltk.corpus import stopwords
+from nltk import PorterStemmer
+import string
+import re
 
 filename1 = "yug_test.txt" 
 #change this to original dataset: mxm_dataset_train.txt
@@ -18,15 +22,19 @@ song_details_by_songid = get_song_details(filename2)
 #Fetch the query from tkinter Text field and get the processed query
 def fetch_query():
 	query = gbn.get()
-    	query = query.strip()
-    	T.delete(1.0, t.END)
+    query = query.strip()
+    T.delete(1.0, t.END)
 
-	#Prcoess Query here
-	query = {'i', 'love', 'coke'}	
+    #Prcoess Query here
+    ps = PorterStemmer()
+    sw_set = set(stopwords.words('english'))
+    query = query.strip(string.punctuation)
+    token = re.sub('[^a-zA-Z]', ' ',query).split()
+    token2 = [ps.stem(token) for word in token if word not in sw_set]
+    query = token2
 
-	relevant_songs = cosine_simi(query, words_by_id, id_by_word, tf_idf_by_song_id) # Use Cosine similatiry get top 10 songs
-
-    	write_in_text(relevant_songs)
+    relevant_songs = cosine_simi(query, words_by_id, id_by_word, tf_idf_by_song_id) # Use Cosine similatiry get top 10 songs
+    write_in_text(relevant_songs)
 
 
 # Write the top 10 songs in the Text Area
