@@ -5,7 +5,7 @@ import numpy as np
 def dataset(filename):
 
     dataset = open(filename)
-    lines = [line.rstrip('\n') for line in open(filename)]
+    lines = [line.rstrip('\n') for line in open(filename, encoding="utf-8")]
     dataset.close()
 
     words= lines[17][1:].split(',') 	#distinct words in the dataset
