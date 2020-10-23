@@ -30,7 +30,7 @@ def fetch_query():
     sw_set = set(stopwords.words('english'))
     query = query.strip(string.punctuation)
     token = re.sub('[^a-zA-Z]', ' ',query).split()
-    token2 = [ps.stem(token) for word in token if word not in sw_set]
+    token2 = [ps.stem(word) for word in token if word not in sw_set]
     query = token2
 
     relevant_songs = cosine_simi(query, words_by_id, id_by_word, tf_idf_by_song_id) # Use Cosine similatiry get top 10 songs
