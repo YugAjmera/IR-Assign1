@@ -5,16 +5,16 @@ from nltk import PorterStemmer
 import string
 import re
 
-filename1 = "mxm_dataset_train.txt" 
-#updated to original dataset: mxm_dataset_train.txt
+filename1 = "yug_test.txt" 
+#change this to original dataset: mxm_dataset_train.txt
 
 words_by_id, songs, id_by_word = dataset(filename1) 
 
 tf_idf_by_song_id = tf_idf_calc(songs) 
 
 
-filename2 = "song_dataset.txt" 
-#updated to original dataset: song_dataset.txt
+filename2 = "yug_dataset.txt" 
+#change this to original dataset: song_dataset.txt
 
 song_details_by_songid = get_song_details(filename2)
 
