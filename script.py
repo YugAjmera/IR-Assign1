@@ -16,7 +16,7 @@ def dataset(filename):
     id = 1
     for i in words:
         words_by_id[id] = i
-	id_by_word[i]=int(id)
+        id_by_word[i]=int(id)
         id += 1
 
     return words_by_id, songs, id_by_word
@@ -28,6 +28,7 @@ def get_song_details(filename):
     dataset = open(filename)
     lines = [line.rstrip('\n') for line in open(filename)]
     dataset.close()
+    lines = lines[18:]
 
     song_details_by_songid = {}
 
@@ -52,48 +53,46 @@ def tf_idf_calc(songs):
 
     k = 1
     for i in songs:
-
-	#For each song
-	tf_by_wordid = {}	
-	total_words = 0
-
-	string = i.split(',')
-	song_id = string[0]
-
-	for j in range(2, len(string)):	
-		string2 = string[j]
-		word_freq = string2.split(':')
-		tf_by_wordid[int(word_freq[0])] = float(word_freq[1])
-		total_words +=  int(word_freq[1])
-
-		try:
-        		df_wordid[int(word_freq[0])] += 1
-    		except Exception as e:
-        		df_wordid[int(word_freq[0])] = 1
-	
-	for i in tf_by_wordid:
-    		tf_by_wordid[i] = tf_by_wordid[i]/total_words
-
-	tf_by_songid[song_id] = tf_by_wordid
-	N += total_words
+	    #For each song
+        tf_by_wordid = {}
+        total_words = 0
+        string = i.split(',')
+        song_id = string[0]
+    
+    for j in range(2, len(string)):
+        string2 = string[j]
+        word_freq = string2.split(':')
+        tf_by_wordid[int(word_freq[0])] = float(word_freq[1])
+        total_words +=  int(word_freq[1])
+        
+        try:
+            df_wordid[int(word_freq[0])] += 1
+        except Exception as e:
+            df_wordid[int(word_freq[0])] = 1
+    
+    for i in tf_by_wordid:
+        tf_by_wordid[i] = tf_by_wordid[i]/total_words
+        
+    tf_by_songid[song_id] = tf_by_wordid
+    N += total_words
 
     for i in df_wordid:
-	idf_by_wordid[i] = 1 + math.log(N/df_wordid[i])
+	    idf_by_wordid[i] = 1 + math.log(N/df_wordid[i])
 
     tf_idf_by_songid={}
 
 
     for i in tf_by_songid: #for each song
-	tf_idf = {}
-        tf_scores_by_wordid = tf_by_songid[i]
-	
+	    tf_idf = {}
+    tf_scores_by_wordid = tf_by_songid[i]
+    
+    
+    for j in tf_scores_by_wordid: #for each word
+        tf = tf_scores_by_wordid[j]
+        idf = idf_by_wordid[j]
+        tf_idf[j] = tf*idf
 
-	for j in tf_scores_by_wordid: #for each word
-            tf = tf_scores_by_wordid[j]
-            idf = idf_by_wordid[j]
-            tf_idf[j] = tf*idf
-
-        tf_idf_by_songid[i] = tf_idf
+    tf_idf_by_songid[i] = tf_idf
 	
     #print(tf_idf_by_songid)
     return tf_idf_by_songid
@@ -109,22 +108,22 @@ def cosine_simi(query, word_by_id, id_by_word, tf_idf_by_song_id):
     
     a = 1
     for i in query:
-	ids[a] = id_by_word[i]
-	a += 1
+	    ids[a] = id_by_word[i]
+	    a += 1
 
     for i in ids:
-	qv[ids[i]-1] = 1
+	    qv[ids[i]-1] = 1
 
 
     for i in tf_idf_by_song_id:
-	song_id = i
-	
-	dv = np.zeros(len(word_by_id)) #document vector
-
-	for j in tf_idf_by_song_id[i]:
-		dv[j-1] = tf_idf_by_song_id[i][j]
-
-	sim_by_songid[song_id] = cosine(qv, dv)
+	    song_id = i
+    
+    dv = np.zeros(len(word_by_id)) #document vector
+    
+    for j in tf_idf_by_song_id[i]:
+        dv[j-1] = tf_idf_by_song_id[i][j]
+        
+    sim_by_songid[song_id] = cosine(qv, dv)
     
     print("before")
     print(sim_by_songid)
@@ -144,4 +143,3 @@ def cosine(v1, v2):
     v2 = np.array(v2)
 
     return np.dot(v1, v2) / (np.sqrt(np.sum(v1**2)) * np.sqrt(np.sum(v2**2)))
-
