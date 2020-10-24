@@ -1,3 +1,8 @@
+'''
+Created on Oct 19, 2020
+
+@authors: yugajmera, rishabhjain, pranav, riddhishdeotale
+'''
 import math
 import numpy as np
 
