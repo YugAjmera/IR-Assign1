@@ -1,7 +1,7 @@
 '''
 Created on Oct 19, 2020
 
-@authors: yugajmeria, rishabhjain, pranav, riddhishdeotale
+@authors: yugajmera, rishabhjain, pranav, riddhishdeotale
 '''
 from script import dataset,get_song_details, tf_idf_calc, cosine_simi
 import tkinter as t
