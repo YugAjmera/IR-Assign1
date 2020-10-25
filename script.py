@@ -5,6 +5,9 @@ Created on Oct 19, 2020
 '''
 import math
 import numpy as np
+import nltk
+import string
+from nltk.tokenize import wordpunct_tokenize
 
 
 #This functions reads the dataset of words and lyrics and indexes all the words by ids and collects songs from dataset and return them
@@ -34,14 +37,16 @@ def get_song_details(filename):
     dataset = open(filename)
     lines = [line.rstrip('\n') for line in open(filename, encoding = 'utf-8')]
     dataset.close()
-    
+    lines = lines[18:]
+
     song_details_by_songid = {}
 
     for i in lines:
         string = i.split('<SEP>')
         details = {}
-        details['Artist'] = string[2]
-        details['Title'] = string[3]
+        l = len(string)
+        details['Artist'] = string[l-2]
+        details['Title'] = string[l-1]
         song_details_by_songid[string[0]] = details
 
     return song_details_by_songid
@@ -147,3 +152,23 @@ def cosine(v1, v2):
     v2 = np.array(v2)
 
     return np.dot(v1, v2) / (np.sqrt(np.sum(v1**2)) * np.sqrt(np.sum(v2**2)))
+
+
+def preprocessing(doc):
+    doc = doc.strip(string.punctuation)
+    token = wordpunct_tokenize(doc)
+    for word in token:
+        word.lower()
+    ps = nltk.PorterStemmer()
+    sw_set = set(nltk.corpus.stopwords.words('english'))
+    token2 = [ps.stem(word) for word in token if word not in sw_set]
+    return token2
+
+def bagofwords(token):
+    BOW = dict()
+    for w in token:
+        if w in BOW.keys():
+            BOW[w] = BOW.get(w)+1
+        else:
+            BOW[w] = 1
+    return BOW

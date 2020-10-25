@@ -10,7 +10,7 @@ from nltk import PorterStemmer
 import string
 import re
 
-filename1 = "yug_test.txt" 
+filename1 = "mxm_dataset_train.txt"
 #change this to original dataset: mxm_dataset_train.txt
 
 words_by_id, songs, id_by_word = dataset(filename1) 
@@ -18,7 +18,7 @@ words_by_id, songs, id_by_word = dataset(filename1)
 tf_idf_by_song_id = tf_idf_calc(songs) 
 
 
-filename2 = "yug_dataset.txt" 
+filename2 = "mxm_779k_matches.txt"
 #change this to original dataset: song_dataset.txt
 
 song_details_by_songid = get_song_details(filename2)
@@ -32,10 +32,13 @@ def fetch_query():
 
     #Prcoess Query here
     ps = PorterStemmer()
-    sw_set = set(stopwords.words('english'))
     query = query.strip(string.punctuation)
     token = re.sub('[^a-zA-Z]', ' ',query).split()
-    token2 = [ps.stem(word) for word in token if word not in sw_set]
+    ds = open(filename1)
+    lines = [line.rstrip('\n') for line in open(filename1, encoding='utf-8')]
+    ds.close()
+    lines = lines[17][1:].split(',')  # distinct words in the dataset
+    token2 = [ps.stem(word) for word in token if word in lines]
     query = token2
 
     relevant_songs = cosine_simi(query, words_by_id, id_by_word, tf_idf_by_song_id) # Use Cosine similatiry get top 10 songs
